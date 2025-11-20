@@ -5,3 +5,7 @@ export const generateJWTToken = (payload: JwtPayload, secret: string, expiresIn:
         expiresIn,
     } as SignOptions);
 }
+
+export const verifyToken = (token : string, token_secret : string) =>{
+    return jwt.verify(token, token_secret);
+}
