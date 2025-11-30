@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import { ScheduleController } from "./schedule.controller";
+import { UserRole } from "@prisma/client";
+import { auth } from "../../helper/auth";
 const router = Router();
 
 router.post(
@@ -10,5 +12,7 @@ router.post(
 //   }
     ScheduleController.createSchedule
 );
+router.get("/",auth(UserRole.DOCTOR), ScheduleController.schedulesForDoctor);
+router.delete("/:id", ScheduleController.deleteSchedule);
 
 export const ScheduleRoutes = router;

@@ -4,6 +4,7 @@ import { prisma } from "../../shared/prisma";
 import { UserStatus } from "@prisma/client";
 import { generateJWTToken } from "../../helper/jwt";
 const login = async (payload: { email: string; password: string }) => {
+  console.log(payload);
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
@@ -18,6 +19,7 @@ const login = async (payload: { email: string; password: string }) => {
   const accessToken = generateJWTToken(
     {
       id: user.id,
+      email: user.email,
       role: user.role,
     },
     config.jwt.access_token_secret as string,
@@ -28,6 +30,7 @@ const login = async (payload: { email: string; password: string }) => {
     {
       id: user.id,
       role: user.role,
+      email: user.email,
     },
     config.jwt.refresh_token_secret as string,
     config.jwt.refresh_token_expires_in as string
