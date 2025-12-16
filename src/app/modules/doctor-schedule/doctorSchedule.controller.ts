@@ -8,7 +8,7 @@ import { JwtPayload } from "jsonwebtoken";
 const insertSchedulesForDoctor = catchAsync(
   async (req: Request & { user?: JwtPayload }, res: Response) => {
     const user = req.user;
-    console.log(user);
+    console.log(user, req.body);
     const result = await doctorScheduleServices.insertSchedulesForDoctor(
       user as JwtPayload,
       req.body

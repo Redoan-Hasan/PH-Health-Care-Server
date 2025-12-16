@@ -59,6 +59,11 @@ const getAllDoctors = async (
           specialities: true,
         },
       },
+      doctorSchedules: {
+        include: {
+          schedule: true,
+        },
+      },
     },
   });
   const total = await prisma.doctor.count({
@@ -174,8 +179,31 @@ Return your response in JSON format with full individual doctor data.
   return result;
 };
 
+const getDoctorById = async (id: string) => {
+  const result = await prisma.doctor.findUnique({
+    where: {
+      id,
+      isDeleted: false,
+    },
+    include: {
+      doctorSpecialties: {
+        include: {
+          specialities: true,
+        },
+      },
+      doctorSchedules: {
+        include: {
+          schedule: true,
+        },
+      },
+    },
+  });
+  return result;
+};
+
 export const DoctorServices = {
   getAllDoctors,
   updateDoctor,
   getAiSuggestions,
+  getDoctorById,
 };

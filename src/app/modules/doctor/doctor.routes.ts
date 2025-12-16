@@ -9,5 +9,7 @@ router.post("/ai-suggestions", DoctorController.getAiSuggestions);
 
 router.patch("/:id", DoctorController.updateDoctor);
 
+router.get("/:id", DoctorController.getDoctorById);
+
 export const DoctorRoutes = router;
 
