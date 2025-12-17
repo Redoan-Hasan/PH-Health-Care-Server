@@ -1,6 +1,7 @@
 import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../shared/prisma";
 import { v4 as uuidv4 } from "uuid";
+import { stripe } from "../../helper/stripe";
 
 const createAppointment = async (
   user: JwtPayload,
@@ -53,6 +54,30 @@ const createAppointment = async (
         transactionId,
       }
     })
+     const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'usd',             product_data: {
+              name: `Appointment with Dr. ${doctorData.name}`,
+              description: `Appointment for ${patientData.name}`,
+            },
+            unit_amount: doctorData.appointmentFee * 100, // Amount in cents
+          },
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      success_url: `https://bindu-logic-clone.vercel.app`,
+      cancel_url: `https://arthub-d9977.web.app`,
+      metadata: {
+        appointmentId: appointment.id,
+        patientId: patientData.id,
+        doctorId: doctorData.id,
+      },
+    });
+    console.log(session)
     return appointment;
   });
   return result;

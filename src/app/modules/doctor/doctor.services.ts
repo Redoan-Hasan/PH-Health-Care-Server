@@ -83,6 +83,7 @@ const updateDoctor = async (
   id: string,
   payload: Partial<IDoctorUpdateWithSpecialities>
 ) => {
+  console.log(payload, id)
   const { specialities, ...doctorData } = payload;
   const doctorInfo = await prisma.doctor.findFirstOrThrow({
     where: { id },
