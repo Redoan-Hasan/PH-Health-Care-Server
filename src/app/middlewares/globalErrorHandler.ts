@@ -29,11 +29,11 @@ const globalErrorHandler = (
         (error = err.meta),
         (statusCode = httpStatus.BAD_REQUEST);
     }
-    if(err.code === "P2025"){
-      (message = "Record does not exist"),
-      (error = err.meta),
-      (statusCode = httpStatus.NOT_FOUND);
-    }
+    // if(err.code === "P2025"){
+    //   (message = "Record does not exist"),
+    //   (error = err.meta),
+    //   (statusCode = httpStatus.NOT_FOUND);
+    // }
   }
   else if (err instanceof Prisma.PrismaClientValidationError) {
     message = "Validation Error";

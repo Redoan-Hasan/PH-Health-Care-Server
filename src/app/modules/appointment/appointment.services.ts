@@ -63,7 +63,7 @@ const createAppointment = async (
               name: `Appointment with Dr. ${doctorData.name}`,
               description: `Appointment for ${patientData.name}`,
             },
-            unit_amount: doctorData.appointmentFee * 100, // Amount in cents
+            unit_amount: doctorData.appointmentFee * 100, 
           },
           quantity: 1,
         },
