@@ -1,8 +1,8 @@
-import { Router } from "express";
-import { PaymentController } from "./payment.controller";
+// import { Router } from "express";
+// import { PaymentController } from "./payment.controller";
 
-const router = Router();
+// const router = Router();
 
-router.post("/webhook", PaymentController.webhook);
+// router.post("/webhook", PaymentController.webhook);
 
-export const PaymentRoutes = router;
+// export const PaymentRoutes = router;

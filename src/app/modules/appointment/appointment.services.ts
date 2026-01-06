@@ -2,6 +2,8 @@ import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../shared/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { stripe } from "../../helper/stripe";
+import { IOptions, paginationHelper } from "../../helper/paginationHelper";
+import { Appointment, Prisma, UserRole } from "@prisma/client";
 
 const createAppointment = async (
   user: JwtPayload,
@@ -47,42 +49,95 @@ const createAppointment = async (
       },
     });
     const transactionId = uuidv4();
-    await tnx.payment.create({
-      data:{
+    const payment = await tnx.payment.create({
+      data: {
         appointmentId: appointment.id,
         amount: doctorData.appointmentFee,
         transactionId,
-      }
-    })
-     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
+      },
+    });
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
       line_items: [
         {
           price_data: {
-            currency: 'usd',             product_data: {
+            currency: "bdt",
+            product_data: {
               name: `Appointment with Dr. ${doctorData.name}`,
               description: `Appointment for ${patientData.name}`,
             },
-            unit_amount: doctorData.appointmentFee * 100, 
+            unit_amount: doctorData.appointmentFee * 100,
           },
           quantity: 1,
         },
       ],
-      mode: 'payment',
+      mode: "payment",
       success_url: `https://bindu-logic-clone.vercel.app`,
       cancel_url: `https://arthub-d9977.web.app`,
       metadata: {
         appointmentId: appointment.id,
-        patientId: patientData.id,
-        doctorId: doctorData.id,
+        paymentId: payment.id,
       },
     });
-    console.log(session)
-    return appointment;
+    // console.log(session);
+    return { paymentUrl: session.url };
   });
   return result;
 };
 
+const getAllAppointments = async (
+  user: JwtPayload,
+  filter: any,
+  options: IOptions
+) => {
+  const { page, limit, sortBy, sortOrder } =
+    paginationHelper.calculatePagination(options);
+  const { ...filterData } = filter;
+  const andConditions: Prisma.AppointmentWhereInput[] = [];
+  if (user.role === UserRole.PATIENT) {
+    andConditions.push({
+      patient: {
+        email: user.email,
+      },
+    });
+  } else if (user.role === UserRole.DOCTOR) {
+    andConditions.push({
+      doctor: {
+        email: user.email,
+      },
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: { equals: filterData[key] },
+      })),
+    });
+  }
+  const whereConditions: Prisma.AppointmentWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+  const result = await prisma.appointment.findMany({
+    where: whereConditions,
+    skip: (page - 1) * limit,
+    take: limit,
+    orderBy: { [sortBy]: sortOrder },
+    include:
+      user.role === UserRole.DOCTOR ? { patient: true } : { doctor: true },
+  });
+  const total = await prisma.appointment.count({
+    where: whereConditions
+  });
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
 export const AppointmentServices = {
   createAppointment,
+  getAllAppointments,
 };

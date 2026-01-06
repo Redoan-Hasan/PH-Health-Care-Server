@@ -4,6 +4,8 @@ import catchAsync from '../../shared/catchAsync';
 import sendResponse from '../../shared/sendResponse';
 import { AppointmentServices } from './appointment.services';
 import { Request, Response } from 'express';
+import { pick } from '../../helper/pick';
+import { appointmentsFilterableFields } from './appointmentsFilterableFields';
 
 const createAppointment = catchAsync(async (req: Request & { user?: JwtPayload }, res : Response) => {
   const user = req.user;
@@ -16,6 +18,20 @@ const createAppointment = catchAsync(async (req: Request & { user?: JwtPayload }
   });
 });
 
+const getAllAppointments = catchAsync(async (req: Request & { user?: JwtPayload }, res: Response) => {
+    const filter = pick(req.query, appointmentsFilterableFields);
+    const options = pick(req.query, [ "page", "limit","sortBy", "sortOrder"]);
+    const user = req.user;
+  const result = await AppointmentServices.getAllAppointments(user as JwtPayload,filter,options);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All appointments fetched successfully",
+    data: result,
+  });
+});
+
 export const AppointmentController = {
   createAppointment,
+  getAllAppointments,
 };
