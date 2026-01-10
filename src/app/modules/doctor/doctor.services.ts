@@ -64,6 +64,12 @@ const getAllDoctors = async (
           schedule: true,
         },
       },
+      reviews: {
+        select: {
+          rating: true,
+          comment: true,
+        },
+      },
     },
   });
   const total = await prisma.doctor.count({
@@ -83,7 +89,7 @@ const updateDoctor = async (
   id: string,
   payload: Partial<IDoctorUpdateWithSpecialities>
 ) => {
-  console.log(payload, id)
+  console.log(payload, id);
   const { specialities, ...doctorData } = payload;
   const doctorInfo = await prisma.doctor.findFirstOrThrow({
     where: { id },
@@ -197,6 +203,7 @@ const getDoctorById = async (id: string) => {
           schedule: true,
         },
       },
+      reviews: true,
     },
   });
   return result;
