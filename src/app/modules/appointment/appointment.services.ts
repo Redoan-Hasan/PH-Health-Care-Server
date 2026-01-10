@@ -1,9 +1,16 @@
+import httpStatus from "http-status";
 import { JwtPayload } from "jsonwebtoken";
 import { prisma } from "../../shared/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { stripe } from "../../helper/stripe";
 import { IOptions, paginationHelper } from "../../helper/paginationHelper";
-import { Appointment, Prisma, UserRole } from "@prisma/client";
+import {
+  Appointment,
+  AppointmentStatus,
+  Prisma,
+  UserRole,
+} from "@prisma/client";
+import ApiError from "../../../errorHelpers/ApiError";
 
 const createAppointment = async (
   user: JwtPayload,
@@ -85,7 +92,7 @@ const createAppointment = async (
   return result;
 };
 
-const getAllAppointments = async (
+const getAllMyAppointments = async (
   user: JwtPayload,
   filter: any,
   options: IOptions
@@ -126,7 +133,7 @@ const getAllAppointments = async (
       user.role === UserRole.DOCTOR ? { patient: true } : { doctor: true },
   });
   const total = await prisma.appointment.count({
-    where: whereConditions
+    where: whereConditions,
   });
   return {
     meta: {
@@ -137,7 +144,38 @@ const getAllAppointments = async (
     data: result,
   };
 };
+
+const updateAppointmentStatus = async (
+  appointmentId: string,
+  status: AppointmentStatus,
+  user: JwtPayload
+) => {
+  const isAppointmentExist = await prisma.appointment.findUniqueOrThrow({
+    where: {
+      id: appointmentId,
+    },
+    include: { doctor: true },
+  });
+  if (user.role === UserRole.DOCTOR) {
+    if (isAppointmentExist.doctor.email !== user.email) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        "You can't change the status of this appointment"
+      );
+    }
+  }
+  return await prisma.appointment.update({
+    where: {
+      id: appointmentId,
+    },
+    data: {
+      status,
+    },
+  });
+};
+
 export const AppointmentServices = {
   createAppointment,
-  getAllAppointments,
+  getAllMyAppointments,
+  updateAppointmentStatus,
 };

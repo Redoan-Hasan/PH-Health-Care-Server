@@ -18,11 +18,11 @@ const createAppointment = catchAsync(async (req: Request & { user?: JwtPayload }
   });
 });
 
-const getAllAppointments = catchAsync(async (req: Request & { user?: JwtPayload }, res: Response) => {
+const getAllMyAppointments = catchAsync(async (req: Request & { user?: JwtPayload }, res: Response) => {
     const filter = pick(req.query, appointmentsFilterableFields);
     const options = pick(req.query, [ "page", "limit","sortBy", "sortOrder"]);
     const user = req.user;
-  const result = await AppointmentServices.getAllAppointments(user as JwtPayload,filter,options);
+  const result = await AppointmentServices.getAllMyAppointments(user as JwtPayload,filter,options);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -31,7 +31,22 @@ const getAllAppointments = catchAsync(async (req: Request & { user?: JwtPayload 
   });
 });
 
+const updateAppointmentStatus = catchAsync(async (req: Request & { user?: JwtPayload }, res: Response) => {
+    const {id} = req.params;
+    const {status} = req.body;
+    const user = req.user;
+    console.log(id,status, user);
+  const result = await AppointmentServices.updateAppointmentStatus(id,status,user as JwtPayload);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: `Appointment status updated successfully`,
+    data: result,
+  });
+});
+
 export const AppointmentController = {
   createAppointment,
-  getAllAppointments,
+  getAllMyAppointments,
+  updateAppointmentStatus,
 };

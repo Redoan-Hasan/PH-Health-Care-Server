@@ -12,9 +12,15 @@ router.post(
 );
 
 router.get(
-  "/",
-  auth(UserRole.PATIENT),
-  AppointmentController.getAllAppointments
+  "/my-appointments",
+  auth(UserRole.PATIENT, UserRole.DOCTOR),
+  AppointmentController.getAllMyAppointments
+);
+
+router.patch(
+  "/status/:id",
+  auth(UserRole.ADMIN, UserRole.DOCTOR),
+  AppointmentController.updateAppointmentStatus
 );
 
 export const AppointmentRoutes = router;
