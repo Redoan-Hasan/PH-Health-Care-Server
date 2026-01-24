@@ -10,5 +10,10 @@ router.post(
     auth(UserRole.DOCTOR),
     PrescriptionController.createPrescription
 );
+router.get(
+    "/",
+    auth(UserRole.PATIENT),
+    PrescriptionController.myPrescriptions
+);
 
 export const PrescriptionRoutes = router;
