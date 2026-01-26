@@ -7,6 +7,7 @@ import { IOptions, paginationHelper } from "../../helper/paginationHelper";
 import {
   Appointment,
   AppointmentStatus,
+  PaymentStatus,
   Prisma,
   UserRole,
 } from "@prisma/client";
@@ -174,8 +175,49 @@ const updateAppointmentStatus = async (
   });
 };
 
+const cancelUnpaidAppointments = async()=>{
+  const thirtyMinAgo = new Date(Date.now() - 10 * 60 * 1000);
+  const unpaidAppointments = await prisma.appointment.findMany({
+    where:{
+      createdAt:{
+        lte:thirtyMinAgo
+      },
+      paymentStatus: PaymentStatus.UNPAID,
+    }
+  })
+  const appointmentIdsToCancel = unpaidAppointments.map(appointment=> appointment.id);
+  await prisma.$transaction(async(tnx)=>{
+    await tnx.payment.deleteMany({
+      where:{
+        appointmentId:{
+          in:appointmentIdsToCancel
+        }
+      }
+    })
+    await tnx.appointment.deleteMany({
+      where:{
+        id:{
+          in:appointmentIdsToCancel
+        }
+      }
+    })
+    for (const unpaidAppointment of unpaidAppointments) {
+      await tnx.doctorSchedules.updateMany({
+        where:{
+          doctorId:unpaidAppointment.doctorId,
+          scheduleId:unpaidAppointment.scheduleId
+        },
+        data:{
+          isBooked:false
+        }
+      })
+    }
+  })
+}
+
 export const AppointmentServices = {
   createAppointment,
   getAllMyAppointments,
   updateAppointmentStatus,
+  cancelUnpaidAppointments
 };
