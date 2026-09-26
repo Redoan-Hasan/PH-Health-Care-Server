@@ -83,7 +83,7 @@ const updateDoctor = async (
   id: string,
   payload: Partial<IDoctorUpdateWithSpecialities>
 ) => {
-  console.log(payload, id)
+  console.log(payload, id);
   const { specialities, ...doctorData } = payload;
   const doctorInfo = await prisma.doctor.findFirstOrThrow({
     where: { id },
@@ -147,8 +147,7 @@ const getAiSuggestions = async (payload: { symptoms: string }) => {
   });
 
   console.log("doctors data loaded.......\n");
-  const prompt = `
-You are a medical assistant AI. Based on the patient's symptoms, suggest the top 3 most suitable doctors.
+  const prompt = `You are a medical assistant AI. Based on the patient's symptoms, suggest the top 3 most suitable doctors.
 Each doctor has specialties and years of experience.
 Only suggest doctors who are relevant to the given symptoms.
 
