@@ -5,8 +5,18 @@ import notFound from './app/middlewares/notFound';
 import config from './config';
 import router from './app/routes';
 import cookieParser from "cookie-parser";
+import { PaymentController } from './app/modules/payment/payment.controller';
+import cron from 'node-cron';
+import { AppointmentServices } from './app/modules/appointment/appointment.services';
+import ApiError from './errorHelpers/ApiError';
 
 const app: Application = express();
+
+app.post(
+    "/webhook",
+    express.raw({ type: "application/json" }),
+    PaymentController.webhook
+);
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true
@@ -16,6 +26,16 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+cron.schedule('* * * * *', () => {
+  try {
+    console.log("Running cron job to cancel unpaid appointments");
+    AppointmentServices.cancelUnpaidAppointments();
+  } catch (error) {
+    console.log("Error in cron job:", error);
+  }
+});
 
 app.use('/api/v1/', router);
 app.get('/', (req: Request, res: Response) => {

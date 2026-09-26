@@ -6,7 +6,10 @@ import { DoctorScheduleRoutes } from "../modules/doctor-schedule/doctorSchedule.
 import { SpecialitiesRoutes } from "../modules/specialities/specialities.routes";
 import { DoctorRoutes } from "../modules/doctor/doctor.routes";
 import { AppointmentRoutes } from "../modules/appointment/appointment.routes";
-import { PaymentRoutes } from "../modules/payment/payment.routes";
+import { PrescriptionRoutes } from "../modules/prescription/prescription.routes";
+import { ReviewRoutes } from "../modules/review/review.routes";
+import { PatientRoutes } from "../modules/patient/patient.routes";
+import { MetaRoutes } from "../modules/meta/meta.routes";
 
 const router = Router();
 
@@ -28,10 +31,6 @@ const moduleRoutes = [
     route: DoctorScheduleRoutes,
   },
   {
-    path: "/doctor-schedule",
-    route: DoctorScheduleRoutes,
-  },
-  {
     path: "/specialities",
     route: SpecialitiesRoutes,
   },
@@ -44,8 +43,20 @@ const moduleRoutes = [
     route: AppointmentRoutes,
   },
   {
-    path: "/payment",
-    route: PaymentRoutes,
+    path: "/prescription",
+    route: PrescriptionRoutes,
+  },
+  {
+    path: "/review",
+    route: ReviewRoutes,
+  },
+  {
+    path: "/patient",
+    route: PatientRoutes,
+  },
+  {
+    path: "/dashboard",
+    route: MetaRoutes,
   },
 ];
 

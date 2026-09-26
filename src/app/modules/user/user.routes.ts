@@ -43,4 +43,10 @@ router.post(
   }
 );
 
+router.get(
+    '/me',
+    auth(UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+    UserController.getMyProfile
+)
+
 export const userRoutes = router;
