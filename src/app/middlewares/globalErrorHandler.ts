@@ -24,11 +24,11 @@ const globalErrorHandler = (
         (error = err.meta),
         (statusCode = httpStatus.BAD_GATEWAY);
     }
-    if (err.code === "P2003") {
-      (message = "Foreign key constraint failed"),
-        (error = err.meta),
-        (statusCode = httpStatus.BAD_REQUEST);
-    }
+    // if (err.code === "P2003") {
+    //   (message = "Foreign key constraint failed"),
+    //     (error = err.meta),
+    //     (statusCode = httpStatus.BAD_REQUEST);
+    // }
     // if(err.code === "P2025"){
     //   (message = "Record does not exist"),
     //   (error = err.meta),

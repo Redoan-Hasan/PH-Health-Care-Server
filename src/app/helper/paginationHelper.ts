@@ -2,7 +2,7 @@ export type IOptions = {
   page?: number | string;
   limit?: number | string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 };
 
 export type IOptionsResult = {
@@ -10,7 +10,7 @@ export type IOptionsResult = {
   limit: number;
   skip: number;
   sortBy: string;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: "asc" | "desc";
 };
 
 const calculatePagination = (options: IOptions): IOptionsResult => {

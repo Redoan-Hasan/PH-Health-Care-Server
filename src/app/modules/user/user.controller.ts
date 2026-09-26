@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { UserServices } from "./user.services";
 import sendResponse from "../../shared/sendResponse";
 import { pick } from "../../helper/pick";
+import { JwtPayload } from "jsonwebtoken";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.createPatient(req);
@@ -53,9 +54,24 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyProfile = catchAsync(async (req: Request & { user?: JwtPayload }, res: Response) => {
+
+    const user = req.user;
+
+    const result = await UserServices.getMyProfile(user as JwtPayload);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "My profile data fetched!",
+        data: result
+    })
+});
+
 export const UserController = {
   createPatient,
   createAdmin,
   createDoctor,
   getAllUsers,
+  getMyProfile,
 };
