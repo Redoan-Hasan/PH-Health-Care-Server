@@ -3,7 +3,6 @@ import catchAsync from "../../shared/catchAsync";
 import { Request, Response } from "express";
 import sendResponse from "../../shared/sendResponse";
 import { AuthServices } from './auth.services';
-
 const login = catchAsync(async(req:Request, res:Response)=>{
     const result = await AuthServices.login(req.body);
     if (result.accessToken) {

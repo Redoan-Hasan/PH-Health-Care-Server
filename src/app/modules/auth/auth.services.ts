@@ -6,7 +6,6 @@ import { UserStatus } from "@prisma/client";
 import { generateJWTToken } from "../../helper/jwt";
 import { JwtPayload, Secret } from 'jsonwebtoken';
 const login = async (payload: { email: string; password: string }) => {
-  console.log(payload);
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: payload.email,
